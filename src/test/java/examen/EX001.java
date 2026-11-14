@@ -116,15 +116,22 @@ public class EX001 {
 
         // VALIDACIÓN 2: Verificar que los productos se encuentren en el carrito
         System.out.println("Validacion 2: Verificando que el producto este en el carrito...");
-        WebElement productoEnCarrito = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".cart-item .product-line-info a")));
-        String nombreProductoCarrito = productoEnCarrito.getText().trim();
-        Assertions.assertTrue(nombreProductoCarrito.length() > 0,
-                "Error: No se encontro ningun producto en el carrito.");
-        Assertions.assertTrue(nombreProductoCarrito.equalsIgnoreCase(nombreProductoCatalogo),
-                "Error: El producto en el carrito (" + nombreProductoCarrito +
-                        ") no coincide con el seleccionado (" + nombreProductoCatalogo + ").");
-        System.out.println("Producto en carrito verificado exitosamente: " + nombreProductoCarrito);
+        List<WebElement> productosEnCarrito = wait.until(
+                ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector(".cart-item .product-line-info a")));
+
+        boolean productoEncontrado = false;
+        for (WebElement item : productosEnCarrito) {
+            System.out.println("Item presente en el carrito: " + item.getText().trim());
+            if (item.getText().trim().equalsIgnoreCase(nombreProductoCatalogo)) {
+                productoEncontrado = true;
+                break;
+            }
+        }
+
+        Assertions.assertTrue(productoEncontrado,
+                "Error: El producto seleccionado (" + nombreProductoCatalogo +
+                        ") no fue encontrado entre los productos del carrito.");
+        System.out.println("Producto en carrito verificado exitosamente: " + nombreProductoCatalogo);
 
         // =========================================================================
         // 7. Iniciar el proceso de checkout
